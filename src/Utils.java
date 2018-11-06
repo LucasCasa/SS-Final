@@ -1,3 +1,5 @@
+import vector.Vector2;
+
 import java.awt.*;
 import java.io.IOException;
 import java.io.Writer;
@@ -12,7 +14,9 @@ public class Utils {
 
 	public static List<Particle> placeObstacles(List<Particle> particleList) {
 		for(int i = 0; i< 100; i++) {
-			particleList.add(new Particle(10000,new Point(i,0),0,1,1));
+			particleList.add(new Particle(i, 10000,new Vector2(i,0),0,1,1));
+			if(i > 15 || i < 11)
+				particleList.add(new Particle(i, 10000,new Vector2(i,20),0,1,1));
 		}
 		return particleList;
 	}
