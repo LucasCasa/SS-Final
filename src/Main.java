@@ -16,8 +16,8 @@ public class Main {
 			Utils.placeObstacles(particles);
 			int start = particles.size();
 			for (int i = 0; i < 50; i++) {
-				Particle p = new Particle(start + i,1,new Vector2((i / 5) * 4,(i % 5) * 4), 10, 1,2);
-				p.setTarget(new Vector2(12,40));
+				Particle p = new Particle(start + i,1,new Vector2((i / 5),(i % 5)), 1.95f, 0.15f,0.32f);
+				p.setTarget(new Vector2(3,6));
 				particles.add(p);
 			}
 			RegularGrid g = new RegularGrid(100, 100, 4);
@@ -30,6 +30,9 @@ public class Main {
 					pa.update(1 / 60f, n.get(pa.getId()));
 					Utils.writeToFile(writer, pa);
 					g.updateParticle(pa);
+					if(pa.getPosition().dst2(3,6) < 1) {
+						pa.setTarget(new Vector2(3, 15));
+					}
 				});
 			}
 				writer.close();

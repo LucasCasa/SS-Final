@@ -14,9 +14,9 @@ public class Utils {
 
 	public static List<Particle> placeObstacles(List<Particle> particleList) {
 		for(int i = 0; i< 100; i++) {
-			particleList.add(new Particle(i, 10000,new Vector2(i,0),0,1,1));
-			if(i > 15 || i < 11)
-				particleList.add(new Particle(i, 10000,new Vector2(i,20),0,1,1));
+			particleList.add(new Particle(i, 10000,new Vector2(i * 0.2f,0),0,0.2f,0.2f));
+			if(i*0.2f < 3 - 0.2f || i * 0.2f > 3 + 0.2f)
+				particleList.add(new Particle(i, 10000,new Vector2(i * 0.2f,5),0,0.2f,0.2f));
 		}
 		return particleList;
 	}
