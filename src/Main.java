@@ -29,14 +29,14 @@ public class Main {
                 Vector2 position = null;
 			    while (!validPos){
 			        validPos = true;
-			        position = new Vector2(r.nextFloat() * 2 + 1,r.nextFloat()*1.5f + 1);
+			        position = new Vector2(r.nextFloat() * 1 + 1.5f,r.nextFloat()*1f + 2);
                     for (Particle particle : particles) {
                         if(position.dst(particle.getPosition()) < 2 * MIN_RADIUS){
                             validPos = false;
                         }
                     }
                 }
-				Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80);
+				Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80, 15);
 				//p.addTarget(target);
                 p.addTarget(targetTop);
 				particles.add(p);
@@ -47,24 +47,25 @@ public class Main {
                 Vector2 position = null;
                 while (!validPos){
                     validPos = true;
-                    position = new Vector2(r.nextFloat() * 2 + 1,r.nextFloat()*1.5f + 4);
+                    position = new Vector2(r.nextFloat() * 1 + 1.5f,r.nextFloat()*1f + 3);
                     for (Particle particle : particles) {
                         if(position.dst(particle.getPosition()) < 2 * MIN_RADIUS){
                             validPos = false;
                         }
                     }
                 }
-                Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80);
+                Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80, 5);
                 //p.addTarget(target);
                 p.addTarget(targetBottom);
                 particles.add(p);
             }
-
+			System.out.println("Starting Simulation");
 			RegularGrid g = new RegularGrid(100, 100, 4);
 			g.setCells(particles);
-
-			for (i = 0; i < 10000; i++) {
-				writer.write(particles.size() - 1 + "\n");
+			int totalTime = (int)(1 / DELTA_TIME * 20);
+			int step = totalTime / (60 * 20);
+			int count = step;
+			for (i = 0; i < totalTime; i++) {
 				//List<List<Particle>> n = g.checkNeighbors(0);
 
 				particles.forEach(pa -> {
@@ -73,9 +74,17 @@ public class Main {
 
 				particles.forEach(pa -> {
  					pa.applyVelocity(DELTA_TIME);
-					Utils.writeToFile(writer, pa);
 					//g.updateParticle(pa);
 				});
+				if(step == count){
+					writer.write(particles.size() - 1 + "\n");
+					particles.forEach(pa -> {
+						Utils.writeToFile(writer, pa);
+						//g.updateParticle(pa);
+					});
+					count = 0;
+				}
+				count++;
 			}
 			writer.close();
             System.out.println(System.currentTimeMillis() - time);

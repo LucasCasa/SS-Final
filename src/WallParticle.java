@@ -5,7 +5,7 @@ import java.util.List;
 public class WallParticle  extends Particle {
 
     public WallParticle(int id, Vector2 position, float speed, float minRadius, float confortRadius) {
-        super(id, position, speed, minRadius, confortRadius, 1);
+        super(id, position, speed, minRadius, confortRadius, 1, 0);
     }
 
     @Override public void nextState(float deltaTime, List<Particle> neigh) {
@@ -19,6 +19,11 @@ public class WallParticle  extends Particle {
 
     @Override
     public void applyNextState() {
+
+    }
+
+    @Override
+    public void applyVelocity(float deltaTime){
 
     }
 }

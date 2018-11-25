@@ -14,11 +14,14 @@ class Particle {
     private Vector2 position;
     private Vector2 velocity;
     private Vector2 nextVelocity;
+    private Vector2 nextPosition;
+    private Vector2 lastAcceleration = new Vector2(0, 0);
     private float speed = 0;
     int cellx = 0;
     int celly = 0;
     private Queue<Vector2> targets;
 
+    private float drivingVelocity;
     private int mass;
     private float maxSpeed;
     private float minRadius;
@@ -28,7 +31,7 @@ class Particle {
     private final float TAU = 0.5f; //Radius expansion constant
     private State nextState = new State();
 
-    public Particle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass) {
+    public Particle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass, int drivingVelocity) {
         this.id = id;
         this.mass = mass;
         this.position = position;
@@ -36,6 +39,7 @@ class Particle {
         this.minRadius = minRadius;
         this.currentRadius = confortRadius;
         this.confortRadius = confortRadius;
+        this.drivingVelocity = drivingVelocity;
         targets = new LinkedList<>();
         velocity = new Vector2(0,0);
         nextVelocity = new Vector2(0,0);
@@ -108,29 +112,46 @@ class Particle {
 
     public Vector2 getDrivingForce() {
 		Vector2 direction = new Vector2(targets.peek().x - position.x , targets.peek().y - position.y);
-		return direction.nor().scl((float) 6).sub(velocity).scl(mass / TAU_SFM); //Velocidad deseada varia entre 0.8 y 6 m/s;
+		return direction.nor().scl(drivingVelocity).sub(velocity).scl(mass / TAU_SFM); //Velocidad deseada varia entre 0.8 y 6 m/s;
 	}
 
 	public void nextStateSFM(List<Particle> particles, float deltaTime) {
         Vector2 totalForce = new Vector2(0, 0);
-        if(id == 320)
-            System.out.println("A");
+
         for (Particle p : particles) {
             if(p.id != id) {
                 totalForce.add(getGranularForce(p));
                 totalForce.add(getSocialForce(p));
             }
         }
-        nextVelocity = velocity.cpy().add(totalForce.add(getDrivingForce()).scl(deltaTime / mass));
+        totalForce.add(getDrivingForce()).scl(1f/mass);
+        updatePosition(totalForce, deltaTime);
+        updateVelocity(totalForce, deltaTime);
+//        nextVelocity = velocity.cpy().add(totalForce);
+//        nextPosition = position.cpy().add(nextVelocity.cpy().scl(deltaTime)).add(totalForce.scl(deltaTime/2));
+        //Beeman
+        lastAcceleration = totalForce;
 	}
 
 	public void applyVelocity(float deltaTime) {
         velocity = nextVelocity;
-        position.add(velocity.x * deltaTime, velocity.y * deltaTime);
+        position = nextPosition;
+    }
+
+    private void updatePosition(Vector2 acceleration, float dt) {
+        float rx = position.x + velocity.x * dt + 2.0f/3 * acceleration.x * dt * dt - 1.0f / 6 * lastAcceleration.x * dt * dt;
+        float ry = position.y + velocity.y * dt + 2.0f/3 * acceleration.y * dt * dt - 1.0f / 6 * lastAcceleration.y * dt * dt;
+        nextPosition = new Vector2(rx, ry);
+    }
+
+    private void updateVelocity(Vector2 acceleration, float dt) {
+        float vx = velocity.x + 2.0f/3 * acceleration.x * dt - 1.0f / 6 * lastAcceleration.x * dt;
+        float vy = velocity.y + 2.0f/3 * acceleration.y * dt - 1.0f / 6 * lastAcceleration.y * dt;
+        nextVelocity = new Vector2(vx, vy);
     }
 
     public String toString() {
-        return position.x + " " + position.y + " " + currentRadius + "\n";
+        return position.x + " " + position.y + " " + currentRadius + " " + id + "\n";
     }
 
     public Vector2 getPosition() {
