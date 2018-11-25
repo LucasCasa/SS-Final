@@ -11,7 +11,7 @@ class Particle {
 
     private static final float TAU_SFM = 0.5f;
     private int id;
-    private Vector2 position;
+    protected Vector2 position;
     private Vector2 velocity;
     private Vector2 nextVelocity;
     private Vector2 nextPosition;
@@ -30,6 +30,7 @@ class Particle {
     private final float BETA = 0.9f;
     private final float TAU = 0.5f; //Radius expansion constant
     private State nextState = new State();
+    boolean isPerson;
 
     public Particle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass, int drivingVelocity) {
         this.id = id;
@@ -43,6 +44,7 @@ class Particle {
         targets = new LinkedList<>();
         velocity = new Vector2(0,0);
         nextVelocity = new Vector2(0,0);
+        isPerson = true;
     }
 
     public void nextState(float deltaTime, List<Particle> neigh) {
@@ -111,17 +113,21 @@ class Particle {
 	}
 
     public Vector2 getDrivingForce() {
+        if(targets.isEmpty()){
+            return new Vector2(0,0);
+        }
 		Vector2 direction = new Vector2(targets.peek().x - position.x , targets.peek().y - position.y);
 		return direction.nor().scl(drivingVelocity).sub(velocity).scl(mass / TAU_SFM); //Velocidad deseada varia entre 0.8 y 6 m/s;
 	}
 
-	public void nextStateSFM(List<Particle> particles, float deltaTime) {
+	private void nextStateSFM(List<Particle> particles, float deltaTime) {
         Vector2 totalForce = new Vector2(0, 0);
 
         for (Particle p : particles) {
             if(p.id != id) {
                 totalForce.add(getGranularForce(p));
-                totalForce.add(getSocialForce(p));
+                if(p.isPerson)
+                    totalForce.add(getSocialForce(p));
             }
         }
         totalForce.add(getDrivingForce()).scl(1f/mass);
@@ -133,9 +139,17 @@ class Particle {
         lastAcceleration = totalForce;
 	}
 
-	public void applyVelocity(float deltaTime) {
+	//Method to call from the outside
+	public void update(List<Particle> particles, float deltaTime){
+        nextStateSFM(particles, deltaTime);
+    }
+
+	public void applyVelocity() {
         velocity = nextVelocity;
         position = nextPosition;
+        if(targets.size() > 1 && position.dst2(targets.peek()) < 0.1f){
+            targets.poll();
+        }
     }
 
     private void updatePosition(Vector2 acceleration, float dt) {

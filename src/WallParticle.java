@@ -6,14 +6,16 @@ public class WallParticle  extends Particle {
 
     public WallParticle(int id, Vector2 position, float speed, float minRadius, float confortRadius) {
         super(id, position, speed, minRadius, confortRadius, 1, 0);
+        isPerson = false;
     }
 
     @Override public void nextState(float deltaTime, List<Particle> neigh) {
 
     }
 
+
     @Override
-    public void nextStateSFM(List<Particle> particles, float deltaTime) {
+    public void update(List<Particle> particles, float deltaTime) {
 
     }
 
@@ -23,7 +25,7 @@ public class WallParticle  extends Particle {
     }
 
     @Override
-    public void applyVelocity(float deltaTime){
+    public void applyVelocity(){
 
     }
 }

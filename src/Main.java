@@ -29,7 +29,7 @@ public class Main {
                 Vector2 position = null;
 			    while (!validPos){
 			        validPos = true;
-			        position = new Vector2(r.nextFloat() * 1 + 1.5f,r.nextFloat()*1f + 2);
+			        position = new Vector2(r.nextFloat() * 1 + 1.5f,r.nextFloat()*1.5f + 1.5f);
                     for (Particle particle : particles) {
                         if(position.dst(particle.getPosition()) < 2 * MIN_RADIUS){
                             validPos = false;
@@ -37,7 +37,7 @@ public class Main {
                     }
                 }
 				Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80, 15);
-				//p.addTarget(target);
+				p.addTarget(target);
                 p.addTarget(targetTop);
 				particles.add(p);
 			}
@@ -47,7 +47,7 @@ public class Main {
                 Vector2 position = null;
                 while (!validPos){
                     validPos = true;
-                    position = new Vector2(r.nextFloat() * 1 + 1.5f,r.nextFloat()*1f + 3);
+                    position = new Vector2(r.nextFloat() * 1 + 1.5f,r.nextFloat()*1.5f + 3);
                     for (Particle particle : particles) {
                         if(position.dst(particle.getPosition()) < 2 * MIN_RADIUS){
                             validPos = false;
@@ -55,7 +55,7 @@ public class Main {
                     }
                 }
                 Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80, 5);
-                //p.addTarget(target);
+                p.addTarget(target);
                 p.addTarget(targetBottom);
                 particles.add(p);
             }
@@ -69,11 +69,11 @@ public class Main {
 				//List<List<Particle>> n = g.checkNeighbors(0);
 
 				particles.forEach(pa -> {
-					pa.nextStateSFM(particles, DELTA_TIME);
+					pa.update(particles, DELTA_TIME);
 				});
 
 				particles.forEach(pa -> {
- 					pa.applyVelocity(DELTA_TIME);
+ 					pa.applyVelocity();
 					//g.updateParticle(pa);
 				});
 				if(step == count){

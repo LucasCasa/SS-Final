@@ -21,8 +21,19 @@ public class Utils {
         count = drawLine(new Vector2(minX,minY), new Vector2(minX,maxY), radius, step, particleList, count); // 0,0 -> 0, 10
         count = drawLine(new Vector2(maxX,minY), new Vector2(maxX,maxY), radius, step, particleList, count); // x, 0 -> x, y
         count = drawLine(new Vector2(minX,maxY), new Vector2(openStart,maxY), radius, step, particleList, count); // Open left
+		count = drawDoor(new Vector2(openStart,maxY), new Vector2(openStart + (openEnd - openStart) / 2,maxY), radius, step, particleList, count, -1); // Open left
+		count = drawDoor(new Vector2(openStart + (openEnd - openStart) / 2,maxY), new Vector2(openEnd,maxY), radius, step, particleList, count, 1); // Open left
         count = drawLine(new Vector2(openEnd,maxY), new Vector2(maxX,maxY), radius, step, particleList, count); // Open right
 		return particleList;
+	}
+
+	private static int drawDoor(Vector2 from, Vector2 to, float radius, float step, List<Particle> list, int startIndex, int orientation) {
+		int particleCount = (int)(from.dst(to) / step);
+		float relativeStep = 1f / particleCount;
+		for (int i = 0; i < particleCount; i++) {
+			list.add(new DoorParticle(startIndex++, from.cpy().lerp(to, relativeStep * i), 0, radius, radius, 1, orientation));
+		}
+		return startIndex;
 	}
 
 	private static int drawLine(Vector2 from, Vector2 to, float radius, float step, List<Particle> list, int startIndex) {
