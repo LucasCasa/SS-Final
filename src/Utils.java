@@ -52,4 +52,12 @@ public class Utils {
 			e.printStackTrace();
 		}
 	}
+
+	public static void writeCaudalToFile(Writer writer, double caudal) {
+		try {
+			writer.write(String.valueOf(caudal));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

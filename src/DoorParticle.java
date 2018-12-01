@@ -34,7 +34,7 @@ public class DoorParticle extends Particle {
         }
     }
     @Override
-    public void applyVelocity() {
-
+    public boolean applyVelocity() {
+        return false;
     }
 }

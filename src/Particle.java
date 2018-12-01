@@ -144,12 +144,14 @@ class Particle {
         nextStateSFM(particles, deltaTime);
     }
 
-	public void applyVelocity() {
+	public boolean applyVelocity() {
         velocity = nextVelocity;
         position = nextPosition;
-        if(targets.size() > 1 && position.dst2(targets.peek()) < 0.1f){
+        if(targets.size() > 1 && position.dst2(targets.peek()) < 0.025f){
             targets.poll();
+            return true; //devolver true o false ahi tengo el momento en el cual la particula paso por la puerta
         }
+        return false;
     }
 
     private void updatePosition(Vector2 acceleration, float dt) {

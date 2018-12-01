@@ -4,10 +4,12 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
+
+	//tema de la puerta. HACERLO MAS feo.
 	private static float DELTA_TIME = 0.001f;
     private static float MIN_RADIUS = 0.15f;
 	public static void main(String[] args) {
@@ -17,9 +19,14 @@ public class Main {
 			OutputStreamWriter out = new OutputStreamWriter(f, "utf-8");
 			Writer writer = new BufferedWriter(out);
 			List<Particle> particles = new ArrayList<>();
+			List<Particle> particlesToBottom = new ArrayList<>();
+			List<Particle> walls = new ArrayList<>();
+			List<Particle> doors = new ArrayList<>();
 			Vector2 target = new Vector2(2,3);
+			Vector2 targetTop2 = new Vector2(2,3.3f);
             Vector2 targetTop = new Vector2(2,6);
             Vector2 targetBottom = new Vector2(2,1);
+            Vector2 targetBottom2 = new Vector2(2,2.7f);
 			Utils.placeBoxWithOpening(particles, 0, 5, 0, 3, 2, 0.4f);
 			int start = particles.size();
 			long time = System.currentTimeMillis();
@@ -37,7 +44,7 @@ public class Main {
                     }
                 }
 				Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80, 15);
-				p.addTarget(target);
+				p.addTarget(targetTop2);
                 p.addTarget(targetTop);
 				particles.add(p);
 			}
@@ -47,17 +54,23 @@ public class Main {
                 Vector2 position = null;
                 while (!validPos){
                     validPos = true;
-                    position = new Vector2(r.nextFloat() * 1 + 1.5f,r.nextFloat()*1.5f + 3);
+
+                    position = new Vector2(r.nextFloat() * 2.5f + 0.5f,r.nextFloat()*1f + 3);
                     for (Particle particle : particles) {
                         if(position.dst(particle.getPosition()) < 2 * MIN_RADIUS){
                             validPos = false;
                         }
                     }
+
+                    if(position.x >= 1.45f && position.x <= 2.55f){
+						validPos = false;
+					}
                 }
                 Particle p = new Particle(start + i, position, 1.95f, MIN_RADIUS,MIN_RADIUS, 80, 5);
-                p.addTarget(target);
-                p.addTarget(targetBottom);
+
+                p.addTarget(new Vector2(position.x, position.y));
                 particles.add(p);
+                particlesToBottom.add(p);
             }
 			System.out.println("Starting Simulation");
 			RegularGrid g = new RegularGrid(100, 100, 4);
@@ -65,6 +78,11 @@ public class Main {
 			int totalTime = (int)(1 / DELTA_TIME * 20);
 			int step = totalTime / (60 * 20);
 			int count = step;
+			double timeElapsed = 0.0;
+			AtomicInteger escapeCounter = new AtomicInteger();
+			AtomicInteger enterCounter = new AtomicInteger();
+			double timeToEscape = 0.0;
+			double timeToEnter = 0.0;
 			for (i = 0; i < totalTime; i++) {
 				//List<List<Particle>> n = g.checkNeighbors(0);
 
@@ -73,9 +91,31 @@ public class Main {
 				});
 
 				particles.forEach(pa -> {
- 					pa.applyVelocity();
+ 					if(pa.applyVelocity()){
+ 						if(escapeCounter.get() < 10){
+							escapeCounter.addAndGet(1);
+						}else{
+ 							if(escapeCounter.get() == 11 &&  enterCounter.get() < 10){
+ 								enterCounter.addAndGet(1);
+							}
+						}
+					};
 					//g.updateParticle(pa);
 				});
+
+				if(escapeCounter.get() == 10){
+					timeToEscape = timeElapsed;
+					particlesToBottom.forEach(pa -> {
+						pa.addTarget(targetBottom2);
+						pa.addTarget(targetBottom);});
+					escapeCounter.addAndGet(1);
+				}
+
+				if(enterCounter.get() == 10){
+						timeToEnter = timeElapsed;
+						enterCounter.addAndGet(1);
+				}
+
 				if(step == count){
 					writer.write(particles.size() - 1 + "\n");
 					particles.forEach(pa -> {
@@ -85,9 +125,12 @@ public class Main {
 					count = 0;
 				}
 				count++;
+				timeElapsed += DELTA_TIME;
 			}
+			System.out.println("Time to escape: " + timeToEscape);
+			System.out.println("Time to enter: " + timeToEnter);
 			writer.close();
-            System.out.println(System.currentTimeMillis() - time);
+            System.out.println("Simulation Time: " + (System.currentTimeMillis() - time));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
