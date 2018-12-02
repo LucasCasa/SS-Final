@@ -1,0 +1,40 @@
+import vector.Vector2;
+
+import java.util.List;
+
+public class DoorParticle extends Particle {
+
+    float distanceMoved = 0;
+    float distanceToMove;
+    int orientation;
+    float delay = 1;
+    float elapsed = 0;
+
+    public DoorParticle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass, float distanceToMove) {
+        super(id, position, speed, minRadius, confortRadius, mass, 0);
+        if(distanceToMove < 0) {
+            orientation = -1;
+            this.distanceToMove = -distanceToMove;
+        } else {
+            orientation = 1;
+            this.distanceToMove = distanceToMove;
+        }
+        isPerson = false;
+    }
+
+    @Override
+    public void update(List<Particle> particleList, float deltaTime){
+        elapsed+= deltaTime;
+        if(elapsed > delay) {
+            if (distanceMoved < distanceToMove) {
+                float delta = orientation * deltaTime;
+                position.add(delta, 0);
+                distanceMoved += Math.abs(delta);
+            }
+        }
+    }
+    @Override
+    public boolean applyVelocity() {
+        return false;
+    }
+}

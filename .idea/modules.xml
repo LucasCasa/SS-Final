@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SS-Final.iml" filepath="$PROJECT_DIR$/SS-Final.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SS-Final_main.iml" filepath="$PROJECT_DIR$/.idea/modules/SS-Final_main.iml" group="SS-Final" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SS-Final_test.iml" filepath="$PROJECT_DIR$/.idea/modules/SS-Final_test.iml" group="SS-Final" />
     </modules>
   </component>
 </project>
