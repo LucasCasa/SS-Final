@@ -2,6 +2,7 @@ import jdk.internal.util.xml.impl.Pair;
 import vector.Vector;
 import vector.Vector2;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -161,8 +162,8 @@ class Particle {
     }
 
     private void updateVelocity(Vector2 acceleration, float dt) {
-        float vx = velocity.x + 2.0f/3 * acceleration.x * dt - 1.0f / 6 * lastAcceleration.x * dt;
-        float vy = velocity.y + 2.0f/3 * acceleration.y * dt - 1.0f / 6 * lastAcceleration.y * dt;
+        float vx = velocity.x + 3.0f/2 * acceleration.x * dt - 0.5f * lastAcceleration.x * dt;
+        float vy = velocity.y + 3.0f/2 * acceleration.y * dt - 0.5f * lastAcceleration.y * dt;
         nextVelocity = new Vector2(vx, vy);
     }
 

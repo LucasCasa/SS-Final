@@ -41,6 +41,9 @@ public class Main {
 			particles.addAll(escapingParticles);
 
 			particlesToBottom = Utils.placePeopleNotBlockingExit(start + escapingParticles.size(), center, 3, doorRadius, 1, 2, ImmutableList.of(), true);
+
+			//particlesToBottom = Utils.placePeopleRandomly(start + escapingParticles.size(), center, 3, 1, 4, ImmutableList.of(targetBottom2, targetBottom), false);
+
 			particles.addAll(particlesToBottom);
 
 

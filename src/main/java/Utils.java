@@ -66,18 +66,18 @@ public class Utils {
 		int particleCount = (int)(from.dst(to) / step);
 		float relativeStep = 1f / particleCount;
 		for (int i = 0; i < particleCount; i++) {
-			list.add(new DoorParticle(startIndex++, from.cpy().lerp(to, relativeStep * i), 0, radius, radius, 1, orientation));
+			list.add(new DoorParticle(startIndex, from.cpy().lerp(to, relativeStep * i), 0, radius, radius, 1, orientation));
 		}
-		return startIndex;
+		return startIndex + particleCount;
 	}
 
 	private static int drawLine(Vector2 from, Vector2 to, float radius, float step, List<Particle> list, int startIndex) {
 		int particleCount = (int)(from.dst(to) / step);
 		float relativeStep = 1f / particleCount;
 		for (int i = 0; i < particleCount; i++) {
-			list.add(new WallParticle(startIndex++, from.cpy().lerp(to, relativeStep * i), 0, radius, radius));
+			list.add(new WallParticle(startIndex, from.cpy().lerp(to, relativeStep * i), 0, radius, radius));
 		}
-		return startIndex;
+		return startIndex + particleCount;
 	}
 
 	public static void writeToFile(Writer writer, Particle p) {
