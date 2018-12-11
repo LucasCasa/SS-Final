@@ -59,16 +59,16 @@ public class Utils {
 		return walls;
 	}
 
-	public static List<Particle> placePeopleRandomly(int start, Vector2 center, float spawnRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
-        return placePeopleNotBlockingExit(start, center, spawnRadius, 0, orientation, drivingForce, SFMagnitude, targets, firstTargetSelf);
+	public static List<Particle> placePeopleRandomly(int count, int start, Vector2 center, float spawnRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
+        return placePeopleNotBlockingExit(count, start, center, spawnRadius, 0, orientation, drivingForce, SFMagnitude, targets, firstTargetSelf);
     }
 
-    public static List<Particle> placePeopleNotBlockingExit(int start, Vector2 center, float spawnRadius, float doorRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
+    public static List<Particle> placePeopleNotBlockingExit(int count, int start, Vector2 center, float spawnRadius, float doorRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
         Target leftRectTarget  = new RectangularTarget(center.x - doorRadius - 0.5f, center.x - doorRadius - MAX_RADIUS, center.y + MIN_RADIUS, center.y + 2, false);
         Target rightRectTarget = new RectangularTarget(center.x + doorRadius + MAX_RADIUS, center.x + doorRadius + 0.5f, center.y + MIN_RADIUS, center.y + 2, false);
         List<Particle> particles = new ArrayList<>();
 	    Random r = new Random();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < count; i++) {
             boolean validPos = false;
             Vector2 position = null;
             float radius = r.nextFloat()*(MAX_RADIUS - MIN_RADIUS) + MIN_RADIUS;

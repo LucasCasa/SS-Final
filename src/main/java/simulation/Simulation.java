@@ -106,7 +106,7 @@ public class Simulation {
 		return data;
 	}
 
-	public void loadAllParticles(float drivingForceEnter, float drivingForceExit, float SFMagnitude, float doorTargetRadius){
+	public void loadAllParticles(float drivingForceEnter, float drivingForceExit, float SFMagnitude, int particleCount, float doorTargetRadius){
 
 		Vector2 center1 = new Vector2(3, 4);
 		Vector2 center2 = new Vector2(7, 4);
@@ -129,11 +129,11 @@ public class Simulation {
 
 		walls = Utils.placeBoxWithOpening(wallParticles, doorParticles, 0, 14, 0, center1.y, ImmutableList.of(center1.x,center2.x,center3.x), doorRadius);
 		int start = particles.size();
-		List<Particle> escapingParticles1 = Utils.placePeopleRandomly(start, center1, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door1Target, target1Top), false);
+		List<Particle> escapingParticles1 = Utils.placePeopleRandomly(particleCount, start, center1, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door1Target, target1Top), false);
 		start += escapingParticles1.size();
-		List<Particle> escapingParticles2 = Utils.placePeopleRandomly(start, center2, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door2Target, target2Top), false);
+		List<Particle> escapingParticles2 = Utils.placePeopleRandomly(particleCount, start, center2, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door2Target, target2Top), false);
 		start += escapingParticles2.size();
-		List<Particle> escapingParticles3 = Utils.placePeopleRandomly(start, center3, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door3Target, target3Top), false);
+		List<Particle> escapingParticles3 = Utils.placePeopleRandomly(particleCount, start, center3, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door3Target, target3Top), false);
 		start += escapingParticles3.size();
 
 		particlesToTop.addAll(escapingParticles1);
@@ -143,11 +143,11 @@ public class Simulation {
 		particles.addAll(escapingParticles2);
 		particles.addAll(escapingParticles3);
 
-		particlesToBottom1 = Utils.placePeopleNotBlockingExit(start, center1, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
+		particlesToBottom1 = Utils.placePeopleNotBlockingExit(particleCount, start, center1, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
 		start += particlesToBottom1.size();
-		particlesToBottom2 = Utils.placePeopleNotBlockingExit(start, center2, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
+		particlesToBottom2 = Utils.placePeopleNotBlockingExit(particleCount, start, center2, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
 		start += particlesToBottom2.size();
-		particlesToBottom3 = Utils.placePeopleNotBlockingExit(start, center3, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
+		particlesToBottom3 = Utils.placePeopleNotBlockingExit(particleCount, start, center3, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
 
 		//particlesToBottom = simulation.Utils.placePeopleRandomly(start + escapingParticles.size(), center, 3, 1, 4, ImmutableList.of(doorTarget, targetBottom), false);
 
