@@ -7,9 +7,11 @@ import vector.Vector2;
 public class PointTarget implements Target {
 
     private Vector2 position;
+    boolean doorTarget;
 
-    public PointTarget(Vector2 position){
+    public PointTarget(Vector2 position, boolean doorTarget){
         this.position = position;
+        this.doorTarget = doorTarget;
     }
 
 
@@ -20,6 +22,16 @@ public class PointTarget implements Target {
 
     @Override
     public Vector2 getDesiredPoint(Particle p) {
+        return position;
+    }
+
+    @Override
+    public boolean isDoorTarget() {
+        return doorTarget;
+    }
+
+    @Override
+    public Vector2 getCenter() {
         return position;
     }
 }

@@ -8,4 +8,8 @@ public interface Target {
     boolean reachedTarget(Particle p);
 
     Vector2 getDesiredPoint(Particle p);
+
+    boolean isDoorTarget();
+
+    Vector2 getCenter();
 }

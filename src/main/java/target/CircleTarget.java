@@ -6,10 +6,12 @@ import vector.Vector2;
 public class CircleTarget implements Target {
     private Vector2 center;
     private float radius;
+    boolean doorTarget;
 
-    public CircleTarget(Vector2 center, float radius){
+    public CircleTarget(Vector2 center, float radius, boolean doorTarget){
         this.center = center;
         this.radius = radius;
+        this.doorTarget = doorTarget;
     }
 
     @Override
@@ -19,6 +21,16 @@ public class CircleTarget implements Target {
 
     @Override
     public Vector2 getDesiredPoint(Particle p) {
+        return center;
+    }
+
+    @Override
+    public boolean isDoorTarget() {
+        return doorTarget;
+    }
+
+    @Override
+    public Vector2 getCenter() {
         return center;
     }
 

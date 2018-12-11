@@ -18,7 +18,7 @@ public class WallParticle  extends Particle {
     }
 
     @Override
-    public boolean applyVelocity(){
-        return false;
+    public int applyVelocity(){
+        return 0;
     }
 }

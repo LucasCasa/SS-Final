@@ -23,7 +23,7 @@ public class Particle {
     private float speed = 0;
     int cellx = 0;
     int celly = 0;
-    private Queue<Target> targets;
+    private LinkedList<Target> targets;
 
     private float drivingVelocity;
     private int mass;
@@ -33,8 +33,9 @@ public class Particle {
     private float confortRadius;
     private final float BETA = 0.9f;
     private final float TAU = 0.5f; //Radius expansion constant
-    private State nextState = new State();
     boolean isPerson;
+
+    private Target savedDoorTarget;
 
     public Particle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass, float drivingVelocity) {
         this.id = id;
@@ -124,15 +125,26 @@ public class Particle {
         return totalForce;
     }
 
-	public boolean applyVelocity() {
+	public int applyVelocity() {
         savedVelocity = velocity;
         velocity = nextVelocity;
         position = nextPosition;
-        if(targets.size() > 1 && targets.peek().reachedTarget(this)){
-            targets.poll();
-            return targets.size() == 1; //devolver true o false ahi tengo el momento en el cual la particula paso por la puerta
+        if(savedDoorTarget != null &&
+                targets.peek() != savedDoorTarget &&
+                !savedDoorTarget.reachedTarget(this) &&
+                savedDoorTarget.getCenter().dst2(targets.peek().getCenter()) + 0.5f <= getPosition().dst2(targets.peek().getCenter())){
+            targets.addFirst(savedDoorTarget);
+            System.out.println("Added back");
+            return -1;
         }
-        return false;
+        if(targets.size() > 1 && targets.peek().reachedTarget(this)){
+            Target t = targets.poll();
+            if(t.isDoorTarget()){
+                savedDoorTarget = t;
+                return 1;
+            }
+        }
+        return 0;
     }
 
     public void correctVelocity(List<Particle> particles, List<Wall> walls, float dt) {
@@ -156,7 +168,7 @@ public class Particle {
     }
 
     public String toString() {
-        return position.x + " " + position.y + " " + currentRadius + " " + (targets.size() == 1?1:0) + "\n";
+        return position.x + " " + position.y + " " + currentRadius + " " + targets.size() + "\n";
     }
 
     public Vector2 getPosition() {
@@ -196,21 +208,16 @@ public class Particle {
         targets.add(target);
     }
 
-    private class State {
-        float speed;
-        float radius;
-        Vector2 position;
-
-        public State(){
-
-        }
-
-        public State(Vector2 position, float speed, float radius){
-            this.position = position;
-            this.speed = speed;
-            this.radius = radius;
-        }
-
+    @Override
+    public int hashCode(){
+        return id;
     }
 
+    @Override
+    public boolean equals(Object o){
+        if(!(o instanceof Particle)){
+            return false;
+        }
+        return ((Particle) o).id == id;
+    }
 }
