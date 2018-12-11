@@ -7,7 +7,7 @@ import java.util.List;
 public class WallParticle  extends Particle {
 
     public WallParticle(int id, Vector2 position, float speed, float minRadius, float confortRadius) {
-        super(id, position, speed, minRadius, confortRadius, 1, 0);
+        super(id, position, speed, minRadius, confortRadius, 1, 0, 0);
         isPerson = false;
     }
 

@@ -1,5 +1,6 @@
 package particles;
 
+import com.sun.xml.internal.ws.api.server.SDDocument;
 import target.Target;
 import vector.Vector;
 import vector.Vector2;
@@ -37,7 +38,9 @@ public class Particle {
 
     private Target savedDoorTarget;
 
-    public Particle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass, float drivingVelocity) {
+    float SFMagnitude;
+
+    public Particle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass, float drivingVelocity, float SFMagnitude) {
         this.id = id;
         this.mass = mass;
         this.position = position;
@@ -50,6 +53,7 @@ public class Particle {
         velocity = new Vector2(0,0);
         nextVelocity = new Vector2(0,0);
         isPerson = true;
+        this.SFMagnitude = SFMagnitude;
     }
 
 	private Vector2 calculateGF(Vector2 normal, float epsilon, Vector2 otherVel) {
@@ -72,7 +76,7 @@ public class Particle {
         if(epsilon < -1) { // if > 0 then force < 0.007, we can avoid doing calculations.
             return Vector2.Zero.cpy();
         }
-        return direction.nor().scl((float) (2000*Math.exp(epsilon/0.08))); //A = 2000 N; B = 0.08 m
+        return direction.nor().scl((float) (SFMagnitude*Math.exp(epsilon/0.08))); //A = 2000 N; B = 0.08 m
     }
 
     private Vector2 getDrivingForce() {
@@ -134,7 +138,6 @@ public class Particle {
                 !savedDoorTarget.reachedTarget(this) &&
                 savedDoorTarget.getCenter().dst2(targets.peek().getCenter()) + 0.5f <= getPosition().dst2(targets.peek().getCenter())){
             targets.addFirst(savedDoorTarget);
-            System.out.println("Added back");
             return -1;
         }
         if(targets.size() > 1 && targets.peek().reachedTarget(this)){

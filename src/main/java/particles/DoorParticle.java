@@ -14,7 +14,7 @@ public class DoorParticle extends Particle {
     float speed;
 
     public DoorParticle(int id, Vector2 position, float speed, float minRadius, float confortRadius, int mass, float distanceToMove) {
-        super(id, position, speed, minRadius, confortRadius, mass, 0);
+        super(id, position, speed, minRadius, confortRadius, mass, 0, 0);
         if(distanceToMove < 0) {
             orientation = -1;
             this.distanceToMove = -distanceToMove;

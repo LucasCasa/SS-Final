@@ -59,11 +59,11 @@ public class Utils {
 		return walls;
 	}
 
-	public static List<Particle> placePeopleRandomly(int start, Vector2 center, float spawnRadius, int orientation, float drivingForce, List<Target> targets, boolean firstTargetSelf) {
-        return placePeopleNotBlockingExit(start, center, spawnRadius, 0, orientation, drivingForce, targets, firstTargetSelf);
+	public static List<Particle> placePeopleRandomly(int start, Vector2 center, float spawnRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
+        return placePeopleNotBlockingExit(start, center, spawnRadius, 0, orientation, drivingForce, SFMagnitude, targets, firstTargetSelf);
     }
 
-    public static List<Particle> placePeopleNotBlockingExit(int start, Vector2 center, float spawnRadius, float doorRadius, int orientation, float drivingForce, List<Target> targets, boolean firstTargetSelf) {
+    public static List<Particle> placePeopleNotBlockingExit(int start, Vector2 center, float spawnRadius, float doorRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
         Target leftRectTarget  = new RectangularTarget(center.x - doorRadius - 0.5f, center.x - doorRadius - MAX_RADIUS, center.y + MIN_RADIUS, center.y + 2, false);
         Target rightRectTarget = new RectangularTarget(center.x + doorRadius + MAX_RADIUS, center.x + doorRadius + 0.5f, center.y + MIN_RADIUS, center.y + 2, false);
         List<Particle> particles = new ArrayList<>();
@@ -90,7 +90,7 @@ public class Utils {
                     validPos = false;
                 }
             }
-            Particle p = new Particle(start + i, position, 1.95f, radius, radius, 80, drivingForce);
+            Particle p = new Particle(start + i, position, 1.95f, radius, radius, 80, drivingForce, SFMagnitude);
             if(firstTargetSelf) {
             	if (leftSide){
 					p.addTarget(leftRectTarget);
@@ -116,7 +116,7 @@ public class Utils {
 		int particleCount = (int)(from.dst(to) / step);
 		float relativeStep = 1f / particleCount;
 		for (int i = 0; i < particleCount; i++) {
-			list.add(new Particle(startIndex, from.cpy().lerp(to, relativeStep * i), 0, radius, radius, 0, 0));
+			list.add(new Particle(startIndex, from.cpy().lerp(to, relativeStep * i), 0, radius, radius, 0, 0, 0));
 		}
 		return startIndex + particleCount;
 	}

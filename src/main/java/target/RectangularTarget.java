@@ -34,7 +34,7 @@ public class RectangularTarget implements Target {
     @Override
     public boolean reachedTarget(Particle p) {
         Vector2 pos = p.getPosition();
-        return pos.x >= minX && pos.x <= maxX && pos.y >= minY && pos.y <= maxY;
+        return Utils.getClosestPoint(pos, minX, maxX, minY, maxY).dst2(pos) <= p.getCurrentRadius() * p.getCurrentRadius();
     }
 
     @Override
