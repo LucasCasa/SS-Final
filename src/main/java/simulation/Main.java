@@ -6,7 +6,7 @@ import java.util.*;
 public class Main {
 
 	public static void main(String[] args) throws IOException {
-        boolean save = false;
+        boolean save = true;
 		FileOutputStream f;
 		OutputStreamWriter out;
 		Writer writer = null;
@@ -18,10 +18,10 @@ public class Main {
 			 writer = new BufferedWriter(out);
 		}
 		SimulationData simData = null;
-		for (int i = 0; i < 50; i++) {
-			System.out.println("Starting Simulation");
+		for (int i = 0; i < 1; i++) {
 			Simulation s = new Simulation();
-			s.loadAllParticles(6, 6, 3500, 10, 0.5f); //Particle count is per door, and side, son 10 is actually 60 particles total
+			s.loadAllParticles(6, 6, 3500, 10, 10, 0.5f, true); //Particle count is per door, and side, son 10 is actually 60 particles total
+			System.out.println("Starting Simulation");
 			simData = s.simulate(2.5f, save);
 			tte.add(simData.enterTime);
 			ttl.add(simData.exitTime);

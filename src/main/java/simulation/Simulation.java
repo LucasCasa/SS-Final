@@ -40,7 +40,7 @@ public class Simulation {
 	public SimulationData simulate(float patience, boolean saveState) throws IOException {
 		SimulationData data = new SimulationData();
 		long time = System.currentTimeMillis();
-		int simulationSeconds = 20;
+		int simulationSeconds = 10;
 		boolean move = false;
 		int totalTime = (int)(1 / DELTA_TIME * simulationSeconds);
 		int step = totalTime / (60 * simulationSeconds);
@@ -48,12 +48,19 @@ public class Simulation {
 		double timeElapsed = 0.0;
 		double timeToEscape = -1.0;
 		double timeToEnter = -1.0;
-		for (int i = 0; i < totalTime && !(timeToEnter != -1 && timeToEscape != -1); i++) {
+		boolean startCountDown = false;
+		float delay = 0.1f;
+		for (int i = 0; i < totalTime; i++) {
+//			if(startCountDown){
+//				delay -= DELTA_TIME;
+//				if(delay <= 0){
+//					startEntering();
+//					delay = 9999;
+//				}
+//			}
 			if(timeElapsed > patience && !move){
 				move = true;
-				particlesToBottom1.forEach(p -> {p.addTarget(door1Target); p.addTarget(target1Bottom);});
-				particlesToBottom2.forEach(p -> {p.addTarget(door2Target); p.addTarget(target2Bottom);});
-				particlesToBottom3.forEach(p -> {p.addTarget(door3Target); p.addTarget(target3Bottom);});
+				startEntering();
 			}
 			//Calculate next state
 			particles.forEach(pa -> pa.update(particles, walls, DELTA_TIME));
@@ -85,6 +92,7 @@ public class Simulation {
 			}
 			if(allExit && timeToEscape == -1) {
 				timeToEscape = timeElapsed;
+				startCountDown = true;
 			} else if (!allExit){
 				timeToEscape = -1;
 			}
@@ -100,13 +108,13 @@ public class Simulation {
 		}
 		data.setEnterTime(timeToEnter);
 		data.setExitTime(timeToEscape);
-		System.out.println("Time to escape: " + timeToEscape);
-		System.out.println("Time to enter: " + timeToEnter);
+		//System.out.println("Time to escape: " + timeToEscape);
+		//System.out.println("Time to enter: " + timeToEnter);
 		System.out.println("Simulation Time: " + (System.currentTimeMillis() - time));
 		return data;
 	}
 
-	public void loadAllParticles(float drivingForceEnter, float drivingForceExit, float SFMagnitude, int particleCount, float doorTargetRadius){
+	public void loadAllParticles(float drivingForceEnter, float drivingForceExit, float SFMagnitude, int particleCountEnter, int particleCountExit, float doorTargetRadius, boolean respectful){
 
 		Vector2 center1 = new Vector2(3, 4);
 		Vector2 center2 = new Vector2(7, 4);
@@ -114,26 +122,26 @@ public class Simulation {
 
 		float doorRadius = 0.7f;
 
-		door1Target = new RectangularTarget(center1, doorTargetRadius, 0.1f, true);
+		door1Target = new RectangularTarget(center1, doorTargetRadius, 0f, true);
 		Target target1Top = new RectangularTarget(new Vector2(center1.x,center1.y + 6f), doorRadius * 2, 0.5f, false);
 		target1Bottom = new RectangularTarget(new Vector2(center1.x,center1.y - 3), 3, 0.5f, false);
 
-		door2Target = new RectangularTarget(center2, doorTargetRadius, 0.1f, true);
+		door2Target = new RectangularTarget(center2, doorTargetRadius, 0f, true);
 		Target target2Top = new RectangularTarget(new Vector2(center2.x,center2.y + 6f), doorRadius * 2, 0.5f, false);
 		target2Bottom = new RectangularTarget(new Vector2(center2.x,center2.y - 3), 3, 0.5f, false);
 
-		door3Target = new RectangularTarget(center3, doorTargetRadius, 0.1f, true);
+		door3Target = new RectangularTarget(center3, doorTargetRadius, 0f, true);
 		Target target3Top = new RectangularTarget(new Vector2(center3.x,center3.y + 6f), doorRadius * 2, 0.5f, false);
 		target3Bottom = new RectangularTarget(new Vector2(center3.x,center3.y - 3), 3, 0.5f, false);
 
 
 		walls = Utils.placeBoxWithOpening(wallParticles, doorParticles, 0, 14, 0, center1.y, ImmutableList.of(center1.x,center2.x,center3.x), doorRadius);
 		int start = particles.size();
-		List<Particle> escapingParticles1 = Utils.placePeopleRandomly(particleCount, start, center1, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door1Target, target1Top), false);
+		List<Particle> escapingParticles1 = Utils.placePeopleRandomly(particleCountExit, start, center1, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door1Target, target1Top), false, false);
 		start += escapingParticles1.size();
-		List<Particle> escapingParticles2 = Utils.placePeopleRandomly(particleCount, start, center2, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door2Target, target2Top), false);
+		List<Particle> escapingParticles2 = Utils.placePeopleRandomly(particleCountExit, start, center2, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door2Target, target2Top), false, false);
 		start += escapingParticles2.size();
-		List<Particle> escapingParticles3 = Utils.placePeopleRandomly(particleCount, start, center3, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door3Target, target3Top), false);
+		List<Particle> escapingParticles3 = Utils.placePeopleRandomly(particleCountExit, start, center3, 1, -1, drivingForceExit, SFMagnitude, ImmutableList.of(door3Target, target3Top), false, false);
 		start += escapingParticles3.size();
 
 		particlesToTop.addAll(escapingParticles1);
@@ -143,14 +151,19 @@ public class Simulation {
 		particles.addAll(escapingParticles2);
 		particles.addAll(escapingParticles3);
 
-		particlesToBottom1 = Utils.placePeopleNotBlockingExit(particleCount, start, center1, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
-		start += particlesToBottom1.size();
-		particlesToBottom2 = Utils.placePeopleNotBlockingExit(particleCount, start, center2, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
-		start += particlesToBottom2.size();
-		particlesToBottom3 = Utils.placePeopleNotBlockingExit(particleCount, start, center3, 1, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true);
-
-		//particlesToBottom = simulation.Utils.placePeopleRandomly(start + escapingParticles.size(), center, 3, 1, 4, ImmutableList.of(doorTarget, targetBottom), false);
-
+		if(respectful) {
+			particlesToBottom1 = Utils.placePeopleNotBlockingExit(particleCountEnter, start, center1, particleCountEnter / 10.0f, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true, false);
+			start += particlesToBottom1.size();
+			particlesToBottom2 = Utils.placePeopleNotBlockingExit(particleCountEnter, start, center2, particleCountEnter / 10.0f, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true, false);
+			start += particlesToBottom2.size();
+			particlesToBottom3 = Utils.placePeopleNotBlockingExit(particleCountEnter, start, center3, particleCountEnter / 10.0f, doorRadius, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), true, false);
+		} else {
+			particlesToBottom1 = Utils.placePeopleRandomly(particleCountEnter, start, center1, particleCountEnter / 10.0f, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), false, true);
+			start += particlesToBottom1.size();
+			particlesToBottom2 = Utils.placePeopleRandomly(particleCountEnter, start, center2, particleCountEnter / 10.0f, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), false, true);
+			start += particlesToBottom2.size();
+			particlesToBottom3 = Utils.placePeopleRandomly(particleCountEnter, start, center3, particleCountEnter / 10.0f, 1, drivingForceEnter, SFMagnitude, ImmutableList.of(), false, true);
+		}
 		particlesToBottom.addAll(particlesToBottom1);
 		particlesToBottom.addAll(particlesToBottom2);
 		particlesToBottom.addAll(particlesToBottom3);
@@ -166,5 +179,11 @@ public class Simulation {
 		particlesToBottom2.forEach(p -> isFree.put(p, false));
 		particlesToBottom3.forEach(p -> isFree.put(p, false));
 
+	}
+
+	private void startEntering(){
+		particlesToBottom1.forEach(p -> {p.targets.poll(); p.addTarget(door1Target); p.addTarget(target1Bottom);});
+		particlesToBottom2.forEach(p -> {p.targets.poll(); p.addTarget(door2Target); p.addTarget(target2Bottom);});
+		particlesToBottom3.forEach(p -> {p.targets.poll(); p.addTarget(door3Target); p.addTarget(target3Bottom);});
 	}
 }

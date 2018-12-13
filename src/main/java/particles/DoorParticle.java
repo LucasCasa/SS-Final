@@ -22,8 +22,8 @@ public class DoorParticle extends Particle {
             orientation = 1;
             this.distanceToMove = distanceToMove;
         }
-        isPerson = false;
         this.speed = speed;
+        super.top = 3;
     }
 
     @Override

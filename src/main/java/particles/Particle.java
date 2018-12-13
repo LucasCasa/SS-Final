@@ -24,7 +24,7 @@ public class Particle {
     private float speed = 0;
     int cellx = 0;
     int celly = 0;
-    private LinkedList<Target> targets;
+    public LinkedList<Target> targets;
 
     private float drivingVelocity;
     private int mass;
@@ -34,7 +34,7 @@ public class Particle {
     private float confortRadius;
     private final float BETA = 0.9f;
     private final float TAU = 0.5f; //Radius expansion constant
-    boolean isPerson;
+    public int top;
 
     private Target savedDoorTarget;
 
@@ -52,7 +52,7 @@ public class Particle {
         targets = new LinkedList<>();
         velocity = new Vector2(0,0);
         nextVelocity = new Vector2(0,0);
-        isPerson = true;
+        top = position.y > 4?1:0;
         this.SFMagnitude = SFMagnitude;
     }
 

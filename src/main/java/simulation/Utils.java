@@ -1,9 +1,6 @@
 package simulation;
 
-import particles.Door;
-import particles.DoorParticle;
-import particles.Particle;
-import particles.Wall;
+import particles.*;
 import target.PointTarget;
 import target.RectangularTarget;
 import target.Target;
@@ -59,11 +56,11 @@ public class Utils {
 		return walls;
 	}
 
-	public static List<Particle> placePeopleRandomly(int count, int start, Vector2 center, float spawnRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
-        return placePeopleNotBlockingExit(count, start, center, spawnRadius, 0, orientation, drivingForce, SFMagnitude, targets, firstTargetSelf);
+	public static List<Particle> placePeopleRandomly(int count, int start, Vector2 center, float spawnRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean waitOnSide, boolean firstTargetSelf) {
+        return placePeopleNotBlockingExit(count, start, center, spawnRadius, 0, orientation, drivingForce, SFMagnitude, targets, waitOnSide, firstTargetSelf);
     }
 
-    public static List<Particle> placePeopleNotBlockingExit(int count, int start, Vector2 center, float spawnRadius, float doorRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean firstTargetSelf) {
+    public static List<Particle> placePeopleNotBlockingExit(int count, int start, Vector2 center, float spawnRadius, float doorRadius, int orientation, float drivingForce, float SFMagnitude, List<Target> targets, boolean waitOnSide, boolean firstTargetSelf) {
         Target leftRectTarget  = new RectangularTarget(center.x - doorRadius - 0.5f, center.x - doorRadius - MAX_RADIUS, center.y + MIN_RADIUS, center.y + 2, false);
         Target rightRectTarget = new RectangularTarget(center.x + doorRadius + MAX_RADIUS, center.x + doorRadius + 0.5f, center.y + MIN_RADIUS, center.y + 2, false);
         List<Particle> particles = new ArrayList<>();
@@ -77,9 +74,9 @@ public class Utils {
                 validPos = true;
                 leftSide = r.nextFloat() > 0.5;
                 if(leftSide) { //LEFT
-                    position = new Vector2(center.x - doorRadius - r.nextFloat() * spawnRadius ,r.nextFloat()*spawnRadius*orientation + orientation*radius + center.y);
+                    position = new Vector2(center.x - doorRadius - r.nextFloat() * 1f ,r.nextFloat()*spawnRadius*orientation + orientation*radius + center.y);
                 } else { //RIGHT
-                    position = new Vector2(center.x + doorRadius + r.nextFloat() * spawnRadius ,r.nextFloat()*spawnRadius*orientation + orientation*radius + center.y);
+                    position = new Vector2(center.x + doorRadius + r.nextFloat() * 1f ,r.nextFloat()*spawnRadius*orientation + orientation*radius + center.y);
                 }
                 for (Particle particle : particles) {
                     if(position.dst(particle.getPosition()) <= particle.getCurrentRadius() + radius){
@@ -91,13 +88,16 @@ public class Utils {
                 }
             }
             Particle p = new Particle(start + i, position, 1.95f, radius, radius, 80, drivingForce, SFMagnitude);
-            if(firstTargetSelf) {
+            if(waitOnSide) {
             	if (leftSide){
 					p.addTarget(leftRectTarget);
 				} else {
             		p.addTarget(rightRectTarget);
 				}
 			}
+			if(firstTargetSelf) {
+			    p.addTarget(new PointTarget(p.getPosition(), false));
+            }
             targets.forEach(p::addTarget);
             particles.add(p);
         }
@@ -116,7 +116,7 @@ public class Utils {
 		int particleCount = (int)(from.dst(to) / step);
 		float relativeStep = 1f / particleCount;
 		for (int i = 0; i < particleCount; i++) {
-			list.add(new Particle(startIndex, from.cpy().lerp(to, relativeStep * i), 0, radius, radius, 0, 0, 0));
+			list.add(new WallParticle(startIndex, from.cpy().lerp(to, relativeStep * i), radius, radius));
 		}
 		return startIndex + particleCount;
 	}
